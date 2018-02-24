@@ -1,0 +1,7 @@
+{
+  "name": "Start on Heroku: Python",
+  "description": "investment_portfolio for client",
+  "image": "heroku/python",
+  "repository": "https://github.com/Abhisheksoni1/tiago_web",
+  "keywords": ["python" , "django"]
+}
