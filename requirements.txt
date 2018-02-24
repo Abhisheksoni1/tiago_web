@@ -11,3 +11,4 @@ urllib3==1.22
 whitenoise==3.3.1
 dj-database-url
 psycopg2
+gunicorn
