@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="loader"></div>
+Price:
+<div style="margin-top:50px;float:right;">
+
+    <select id="durationSelected" name="durationSelected">
+        <option value="bitfinex">BITFINEX</option>
+        <!--<option value="weekly">Weekly</option>-->
+        <!--<option value="monthly">Monthly</option>-->
+</select>
+
+    <select id="coinSelected" name="coinSelected">
+        {% for symbol in symbols %}
+         <option value="{{symbol}}">{{symbol.upper}}</option>
+   {% endfor%}
+</select>
+</div>
+
+<div class="panel panel-default">
+    <div id="chart_panel" class="panel-body"
+         style="width:100%;height:500px"></div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+   function showGraph(duration,coinId, coinName){
+    var user_graph = {
+    chart: {
+    renderTo: 'chart_panel',
+    type: 'line',
+    },
+    legend: {enabled: false},
+    title: {text: 'Price  Graph'},
+    subtitle: {text: 'Price Vs Date'},
+    xAxis: {title: {text: null}, labels: {rotation: -45}},
+    yAxis: {title: {text: null}},
+    series: [{}],
+    };
+    chartDataUrl = "/"+duration+"/"+coinId;
+    $.getJSON(chartDataUrl,
+    function(data) {
+    user_graph.xAxis.categories = data['dates'];
+    user_graph.series[0].name = 'price in $';
+    user_graph.series[0].data = data['prices'];
+    user_graph.title['text'] = 'Price Graph of '+ coinName;
+
+    var chart = new Highcharts.Chart(user_graph);
+     $(".loader").fadeOut("slow");
+    });
+    };
+
+    var coinId = $('#coinSelected').val();
+    var duration = $('#durationSelected').val();
+    var coinName = $("#coinSelected :selected").text();
+    showGraph(duration,coinId,coinName);
+
+ $("#coinSelected").change(function() {
+    $(".loader").show();
+    var coinId = $('#coinSelected').val();
+    var coinName = $("#coinSelected :selected").text();
+    showGraph(duration,coinId,coinName);
+  });
+
+ $("#durationSelected").change(function() {
+    $(".loader").show();
+    var coinId = $('#coinSelected').val();
+    var coinName = $("#coinSelected :selected").text();
+    var duration = $('#durationSelected').val();
+    showGraph(duration,coinId,coinName);
+  });
+
+});
+
+</script>
+{% endblock %}
