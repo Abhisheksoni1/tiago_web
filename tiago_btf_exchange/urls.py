@@ -20,5 +20,6 @@ from bitfinex import views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.home, name='home'),
-    url(r'^bitfinex/(?P<symbol>\w+)$', views.candle, name='candle')
+    url(r'^bitfinex/(?P<symbol>\w+)$', views.candle, name='candle'),
+    url(r'^update_data/(?P<symbol>\w+)$', views.update_data, name='update_data')
 ]

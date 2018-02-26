@@ -31,3 +31,7 @@ class Bitfinex(object):
             date_array.append(datetime.datetime.fromtimestamp(int(item[0]/1000)).strftime('%Y-%m-%d %H:%M:%S'))
             prices.append(item[2])
         return date_array[::-1], prices[::-1]
+
+#
+# b = Bitfinex()
+# print(b.get_ticker('btcusd'))
