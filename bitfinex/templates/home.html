@@ -18,10 +18,11 @@
     </select>
 </div>
 <div style="width: 100%;overflow:auto;">
-    <div style="float:right; width: 70%">
+    <div style="float:right; width: 65%">
         <div id="chart_panel" class="panel-body"
-             style="width:100%;height:500px"></div>
+             style="width:100%;height:550px"></div>
     </div>
+
     <div style="float:left;padding:20px;">
         <b>Price:</b>&nbsp;&nbsp; <span style="color:blue" id="price"> $1000</span> &nbsp;&nbsp; &nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -34,6 +35,37 @@
 
         <span style="float:right;"><b>Bid:</b>&nbsp;&nbsp; <span style="color:blue;" id="bid"> $1170</span></span>
         <p><b>Volume:</b>&nbsp;&nbsp; <span style="color:blue" id="vol"> 13082301 BTC</span></p>
+
+        <hr>
+        <b>Order Form.</b>
+        <form style="width: 400px;height:150px; margin-top:10px" action="." method="post">
+            ORDER TYPE :
+            <select id="orderTypeSelected">
+                <option value="">----------</option>
+                <option value="Limit">LIMIT</option>
+                <option value="Market">MARKET</option>
+            </select>
+            <p>
+            <div style="width:100%; overflow:auto;">
+            <div style="float:left; width: 50%">
+                <span style="font-size: 13px; color: blue" id="price_label">PRICE USD:</span><br>
+                <input style="width:190px; height: 30px;" id="order_price" placeholder="Price" type="text">
+            </div>
+            <div style="float:right; ">
+                <span  style="font-size: 13px; color: blue" id="amount_label">AMOUNT BTC:</span><br>
+                <input style="width:190px; height: 30px;" id="order_amount" placeholder="Amount" type="text">
+            </div>
+            </div>
+            <br>
+
+            <button id="buy" style="float:left;background-color: #90EE90;padding:12px; text-align: center;width:190px;border-radius: 15px;" type="button">BUY</button>
+            <button id="sell" style="float:right;background-color: #F08080;padding:12px; text-align: center;width:190px;border-radius: 15px; " type="button">SELL</button>
+        </form>
+        <hr>
+        <span style="float:left;">Stop Loss&nbsp; <input style="float:left;" type="checkbox" id="stoploss" onchange="myStoploss()"></span>
+        <span style="float:right;"><input type="checkbox" id="stopprofit" onchange="myStopprofit()">Stop Profit</span>
+        <input id="stoplossvalue" style="display:none; width:70px;float:left;" placeholder="stop loss">
+        <input id="stopprofitvalue" style="display:none; width:70px;float:right;" placeholder="stop profit">
     </div>
 </div>
 
@@ -48,28 +80,6 @@ $(document).ready(function() {
     var user_graph = {
     chart: {
     renderTo: 'chart_panel',
-     <!--events: {-->
-            <!--load: function () {-->
-
-                <!--// set up the updating of the chart each second-->
-                <!--var series = this.series[0];-->
-                <!--setInterval(function () {-->
-                    <!--Url = "/update_data/"+coinId;-->
-                    <!--$.getJSON(Url,-->
-                        <!--function(data) {-->
-                            <!--var x = data['timestamp']; // current time-->
-                            <!--var y = data['last_price'];-->
-                            <!--document.getElementById("price").innerHTML = data['price']+ " " + data['sub_currency'];-->
-                            <!--document.getElementById("high").innerHTML = data['high']+ " " + data['sub_currency'];-->
-                            <!--document.getElementById("low").innerHTML = data['low']+ " " + data['sub_currency'];-->
-                            <!--document.getElementById("vol").innerHTML = data['volume']+ " " + data['main_currency'];-->
-                            <!--document.getElementById("ask").innerHTML = data['ask']+ " " + data['sub_currency'];-->
-                            <!--document.getElementById("bid").innerHTML = data['bid']+ " " + data['sub_currency'];-->
-                            <!--series.addPoint([x, y], true, true);-->
-                        <!--});-->
-                    <!--}, 5000);-->
-                <!--}-->
-            <!--},-->
     type: 'line',
     },
     legend: {enabled: false},
@@ -92,6 +102,8 @@ $(document).ready(function() {
     document.getElementById("vol").innerHTML = data['volume']+ " " + data['main_currency'];
     document.getElementById("ask").innerHTML = data['ask']+ " " + data['sub_currency'];
     document.getElementById("bid").innerHTML = data['bid']+ " " + data['sub_currency'];
+    document.getElementById("price_label").innerHTML =  "PRICE " + data['sub_currency'];
+    document.getElementById("amount_label").innerHTML =  "AMOUNT " + data['main_currency'];
 
     var chart = new Highcharts.Chart(user_graph);
      $(".loader").fadeOut("slow");
@@ -118,6 +130,62 @@ $(document).ready(function() {
     var duration = $('#durationSelected').val();
     showGraph(duration,coinId,coinName);
   });
+ $("#orderTypeSelected").change(function() {
+    var orderType = $("#orderTypeSelected :selected").text();
+    if (orderType == "MARKET"){
+    $("#order_price").prop("readonly", true);
+    $("#order_price").attr("placeholder", "Market Price");
+    }
+    else{
+    $("#order_price").prop("readonly", false);
+    $("#order_price").attr("placeholder", "Price");
+
+    }
+ });
+
+  $("#buy").click(function(){
+        var orderType = $('#orderTypeSelected').val();
+        if (orderType == ""){
+        alert("please select order type to buy/sell");
+        return;
+        }
+        var price = $('#order_price').val();
+        if (!(orderType == "Market")){
+            if (!price)
+            {
+                alert("Please enter price to buy/sell");
+                return;
+            }
+        }
+        var amount = $('#order_amount').val();
+        if (!amount){
+            alert("Please enter Amount to buy/sell");
+            return;
+        }
+  });
+  $("#sell").click(function(){
+        var orderType = $('#orderTypeSelected').val();
+        if (orderType == ""){
+        alert("please select order type to buy/sell");
+        return;
+        }
+        var price = $('#order_price').val();
+        if (!(orderType == "Market")){
+            if (!price)
+            {
+                alert("Please enter price to buy/sell");
+                return;
+            }
+        }
+        var amount = $('#order_amount').val();
+        if (!amount){
+            alert("Please enter Amount to buy/sell");
+            return;
+        }
+  });
+
+
+
 
 function updateData() {
     setInterval(function(){
@@ -132,6 +200,7 @@ function updateData() {
                 document.getElementById("vol").innerHTML = data['volume']+ " " + data['main_currency'];
                 document.getElementById("ask").innerHTML = data['ask']+ " " + data['sub_currency'];
                 document.getElementById("bid").innerHTML = data['bid']+ " " + data['sub_currency'];
+
                 <!--series.addPoint([x, y], true, true);-->
             });
             },
@@ -139,6 +208,24 @@ function updateData() {
 }
 
 });
+function myStoploss() {
+    var checkBox = document.getElementById("stoploss");
+    var text = document.getElementById("stoplossvalue");
+    if (checkBox.checked == true){
+        text.style.display = "block";
+    } else {
+       text.style.display = "none";
+    }
+}
 
+function myStopprofit() {
+    var checkBox = document.getElementById("stopprofit");
+    var text = document.getElementById("stopprofitvalue");
+    if (checkBox.checked == true){
+        text.style.display = "block";
+    } else {
+       text.style.display = "none";
+    }
+}
 </script>
 {% endblock %}
