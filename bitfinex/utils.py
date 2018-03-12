@@ -17,7 +17,7 @@ class Bitfinex(object):
         data = json.loads(requests.get(self.BASE_URL + end_point).text)
         return data
 
-    def get_candle(self, symmbol, interval='5m'):
+    def get_candle(self, symmbol, interval):
         data = {
             'limit': "500",
             'start': str(mktime((datetime.datetime.now() - datetime.timedelta(hours=24)).timetuple())),

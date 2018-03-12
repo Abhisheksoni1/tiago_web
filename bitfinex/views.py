@@ -14,9 +14,9 @@ def home(request):
     return render(request, 'home.html', {'symbols': symbols})
 
 
-def candle(request, symbol):
+def candle(request, symbol, interval='1m'):
     btf = Bitfinex()
-    dates, prices = btf.get_candle(symbol)
+    dates, prices = btf.get_candle(symbol, interval=interval)
     data = btf.get_ticker(symbol)
     item = {'dates': dates,
             'prices': prices,

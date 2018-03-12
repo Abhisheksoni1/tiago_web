@@ -10,7 +10,20 @@
         <!--<option value="weekly">Weekly</option>-->
         <!--<option value="monthly">Monthly</option>-->
     </select>
-
+    <select id="intervalSelected" name="intervalSelected">
+        <option value="1m" selected>1 Min</option>
+        <option value="5m">5 Min</option>
+        <option value="15m">15 Min</option>
+        <option value="30m">30 Min</option>
+        <option value="1h">1 Hour</option>
+        <option value="3h">3 Hour</option>
+        <option value="6h">6 Hour</option>
+        <option value="12h">12 Hour</option>
+        <option value="1D">1 Day</option>
+        <option value="7D">7 Days</option>
+        <option value="14D">14 Days</option>
+        <option value="1M">1 Month</option>
+    </select>
     <select id="coinSelected" name="coinSelected">
         {% for symbol in symbols %}
         <option value="{{symbol}}">{{symbol.upper}}</option>
@@ -76,7 +89,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-   function showGraph(duration,coinId, coinName){
+   function showGraph(duration,coinId, coinName, interval){
     var user_graph = {
     chart: {
     renderTo: 'chart_panel',
@@ -89,7 +102,7 @@ $(document).ready(function() {
     yAxis: {title: {text: null}},
     series: [{}],
     };
-    chartDataUrl = "/"+duration+"/"+coinId;
+    chartDataUrl = "/"+duration+"/"+coinId + "/" + interval;
     $.getJSON(chartDataUrl,
     function(data) {
     user_graph.xAxis.categories = data['dates'];
@@ -113,14 +126,17 @@ $(document).ready(function() {
     var coinId = $('#coinSelected').val();
     var duration = $('#durationSelected').val();
     var coinName = $("#coinSelected :selected").text();
-    showGraph(duration,coinId,coinName);
+    var interval = $("#intervalSelected").val();
+
+    showGraph(duration,coinId,coinName,interval);
     updateData();
 
  $("#coinSelected").change(function() {
     $(".loader").show();
     var coinId = $('#coinSelected').val();
     var coinName = $("#coinSelected :selected").text();
-    showGraph(duration,coinId,coinName);
+    var interval = $("#intervalSelected").val();
+    showGraph(duration,coinId,coinName, interval);
   });
 
  $("#durationSelected").change(function() {
@@ -128,7 +144,9 @@ $(document).ready(function() {
     var coinId = $('#coinSelected').val();
     var coinName = $("#coinSelected :selected").text();
     var duration = $('#durationSelected').val();
-    showGraph(duration,coinId,coinName);
+    var interval = $("#intervalSelected").val();
+
+    showGraph(duration,coinId,coinName,interval);
   });
  $("#orderTypeSelected").change(function() {
     var orderType = $("#orderTypeSelected :selected").text();
@@ -142,6 +160,15 @@ $(document).ready(function() {
 
     }
  });
+ $("#intervalSelected").change(function(){
+    $(".loader").show();
+    var interval = $("#intervalSelected").val();
+    var coinName = $("#coinSelected :selected").text();
+    var duration = $('#durationSelected').val();
+    var coinId = $('#coinSelected').val();
+    showGraph(duration,coinId,coinName,interval);
+
+  });
 
   $("#buy").click(function(){
         var orderType = $('#orderTypeSelected').val();
