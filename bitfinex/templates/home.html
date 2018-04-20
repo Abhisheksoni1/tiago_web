@@ -310,7 +310,7 @@ TradingView.onready(function()
         interval: '5',
         container_id: "tv_chart_container",
         //	BEWARE: no trailing slash is expected in feed URL
-        datafeed: new Datafeeds.UDFCompatibleDatafeed("http://127.0.0.1:8000/demo_feed"),
+        datafeed: new Datafeeds.UDFCompatibleDatafeed("https://trading-exchange.herokuapp.com/demo_feed"),
         library_path: "charting_library/",
         timezone:"America/Chicago",
         locale: getParameterByName('lang') || "en",
