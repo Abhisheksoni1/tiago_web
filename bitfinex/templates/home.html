@@ -10,29 +10,22 @@
         <!--<option value="weekly">Weekly</option>-->
         <!--<option value="monthly">Monthly</option>-->
     </select>
-    <select id="intervalSelected" name="intervalSelected">
-        <option value="1m" selected>1 Min</option>
-        <option value="5m">5 Min</option>
-        <option value="15m">15 Min</option>
-        <option value="30m">30 Min</option>
-        <option value="1h">1 Hour</option>
-        <option value="3h">3 Hour</option>
-        <option value="6h">6 Hour</option>
-        <option value="12h">12 Hour</option>
-        <option value="1D">1 Day</option>
-        <option value="7D">7 Days</option>
-        <option value="14D">14 Days</option>
-        <option value="1M">1 Month</option>
-    </select>
     <select id="coinSelected" name="coinSelected">
         {% for symbol in symbols %}
         <option value="{{symbol}}">{{symbol.upper}}</option>
         {% endfor%}
     </select>
 </div>
+<button id="start" style="float:left;background-color:green;padding:5px; text-align: center;
+        margin-top:30px; margin-left:17px;"type="button">Start</button>
+<button id="stop" style="float:left;background-color:red;padding:5px; text-align: center;
+        margin-top:30px; margin-left:50px; margin-right:50px;"type="button">Stop</button>
+<div style="margin-top:0px;">
+<label class="switch"><input type="checkbox" id="togBtn"><div class="slider round"></div></label>
+</div>
 <div style="width: 100%;overflow:auto;">
     <div style="float:right; width: 65%">
-        <div id="chart_panel" class="panel-body"
+        <div id="tv_chart_container" class="panel-body"
              style="width:100%;height:550px"></div>
     </div>
 
@@ -79,6 +72,26 @@
         <span style="float:right;"><input type="checkbox" id="stopprofit" onchange="myStopprofit()">Stop Profit</span>
         <input id="stoplossvalue" style="display:none; width:70px;float:left;" placeholder="stop loss">
         <input id="stopprofitvalue" style="display:none; width:70px;float:right;" placeholder="stop profit">
+        <div style="margin-top:50px" class="container">
+
+            <ul class="tabs">
+                <li class="tab-link current" data-tab="tab-1">Indicators</li>
+                <li class="tab-link" data-tab="tab-2">Setting</li>
+
+            </ul>
+
+            <div id="tab-1" class="tab-content current">
+                <div style="float:right;">
+                    <div id="indicator_panel" class="panel-body"
+                         style="width:90%;height:220px;"></div>
+                </div>
+            </div>
+            <div id="tab-2" class="tab-content">
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+            </div>
+
+        </div><!-- container -->
+
     </div>
 </div>
 
@@ -88,55 +101,31 @@
 <!--</div>-->
 
 <script type="text/javascript">
+var widget
 $(document).ready(function() {
-   function showGraph(duration,coinId, coinName, interval){
-    var user_graph = {
-    chart: {
-    renderTo: 'chart_panel',
-    type: 'line',
-    },
-    legend: {enabled: false},
-    title: {text: 'Price  Graph'},
-    subtitle: {text: 'Price Vs Date'},
-    xAxis: {title: {text: null}, labels: {rotation: -45}},
-    yAxis: {title: {text: null}},
-    series: [{}],
-    };
-    chartDataUrl = "/"+duration+"/"+coinId + "/" + interval;
-    $.getJSON(chartDataUrl,
-    function(data) {
-    user_graph.xAxis.categories = data['dates'];
-    user_graph.series[0].name = 'price in $';
-    user_graph.series[0].data = data['prices'];
-    user_graph.title['text'] = 'Price Graph of '+ coinName;
-    document.getElementById("price").innerHTML = data['price']+ " " + data['sub_currency'];
-    document.getElementById("high").innerHTML = data['high']+ " " + data['sub_currency'];
-    document.getElementById("low").innerHTML = data['low']+ " " + data['sub_currency'];
-    document.getElementById("vol").innerHTML = data['volume']+ " " + data['main_currency'];
-    document.getElementById("ask").innerHTML = data['ask']+ " " + data['sub_currency'];
-    document.getElementById("bid").innerHTML = data['bid']+ " " + data['sub_currency'];
-    document.getElementById("price_label").innerHTML =  "PRICE " + data['sub_currency'];
-    document.getElementById("amount_label").innerHTML =  "AMOUNT " + data['main_currency'];
-
-    var chart = new Highcharts.Chart(user_graph);
-     $(".loader").fadeOut("slow");
-    });
-    };
-
     var coinId = $('#coinSelected').val();
     var duration = $('#durationSelected').val();
     var coinName = $("#coinSelected :selected").text();
     var interval = $("#intervalSelected").val();
 
-    showGraph(duration,coinId,coinName,interval);
+    <!--showGraph(duration,coinId,coinName,interval);-->
+    <!--showIndicatorGraph();-->
     updateData();
+ $('ul.tabs li').click(function(){
+		var tab_id = $(this).attr('data-tab');
 
+		$('ul.tabs li').removeClass('current');
+		$('.tab-content').removeClass('current');
+
+		$(this).addClass('current');
+		$("#"+tab_id).addClass('current');
+	});
  $("#coinSelected").change(function() {
     $(".loader").show();
     var coinId = $('#coinSelected').val();
     var coinName = $("#coinSelected :selected").text();
     var interval = $("#intervalSelected").val();
-    showGraph(duration,coinId,coinName, interval);
+    widget.setSymbol(coinName, 1, widget.onSymbolChange)
   });
 
  $("#durationSelected").change(function() {
@@ -146,7 +135,7 @@ $(document).ready(function() {
     var duration = $('#durationSelected').val();
     var interval = $("#intervalSelected").val();
 
-    showGraph(duration,coinId,coinName,interval);
+
   });
  $("#orderTypeSelected").change(function() {
     var orderType = $("#orderTypeSelected :selected").text();
@@ -160,15 +149,65 @@ $(document).ready(function() {
 
     }
  });
- $("#intervalSelected").change(function(){
-    $(".loader").show();
-    var interval = $("#intervalSelected").val();
-    var coinName = $("#coinSelected :selected").text();
-    var duration = $('#durationSelected').val();
-    var coinId = $('#coinSelected').val();
-    showGraph(duration,coinId,coinName,interval);
 
-  });
+
+$('#togBtn').change(function() {
+        if ($('#start').attr("disabled")){
+            alert("please stop bot to change the mode ");
+
+            if(this.checked){
+                $('#togBtn').prop('checked', false);
+            }
+            else{
+                $('#togBtn').prop('checked', true);
+            }
+
+        }
+        else{
+         if(this.checked) {
+                alert("Are you sure to run your bot in live mode? did you setup your keys and secret ?");
+            }
+
+        }
+    });
+
+ $("#stop").click(function(){
+    DataUrl = "/stop"
+    $.getJSON(DataUrl,
+    function(data) {
+        if (data['status'] == 200){
+            $('#stop').attr("disabled", true);
+            $('#start').attr("disabled", false);
+            alert("bot stop successfully");
+        }
+        else{
+        alert("unable to stop bot");
+        }
+
+    });
+});
+
+ $("#start").click(function(){
+    if ($('#togBtn').prop("checked")){
+    DataUrl = "/start/2/"
+    }
+    else{
+    DataUrl = "/start/1/"
+    }
+    DataUrl = DataUrl + $('#coinSelected').val() + "/" + $("#intervalSelected").val();
+    $.getJSON(DataUrl,
+    function(data) {
+        if (data['status'] == 200){
+            $('#stop').attr("disabled", false);
+            $('#start').attr("disabled", true);
+            alert("bot start successfully");
+        }
+        else{
+        alert("unable to start bot");
+        }
+
+    });
+});
 
   $("#buy").click(function(){
         var orderType = $('#orderTypeSelected').val();
@@ -190,6 +229,7 @@ $(document).ready(function() {
             return;
         }
   });
+
   $("#sell").click(function(){
         var orderType = $('#orderTypeSelected').val();
         if (orderType == ""){
@@ -254,5 +294,38 @@ function myStopprofit() {
        text.style.display = "none";
     }
 }
+
+function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                        results = regex.exec(location.search);
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+
+TradingView.onready(function()
+{
+     widget = window.tvWidget = new TradingView.widget({
+        fullscreen: false,
+        symbol: $("#coinSelected :selected").text(),
+        interval: '5',
+        container_id: "tv_chart_container",
+        //	BEWARE: no trailing slash is expected in feed URL
+        datafeed: new Datafeeds.UDFCompatibleDatafeed("http://127.0.0.1:8000/demo_feed"),
+        library_path: "charting_library/",
+        timezone:"America/Chicago",
+        locale: getParameterByName('lang') || "en",
+        //	Regression Trend-related functionality is not implemented yet, so it's hidden for a while
+        drawings_access: { type: 'black', tools: [ { name: "Regression Trend" } ] },
+        disabled_features: ["use_localstorage_for_settings"],
+        enabled_features: ["study_templates"],
+        charts_storage_url: 'http://saveload.tradingview.com',
+        charts_storage_api_version: "1.1",
+        client_id: 'tradingview.com',
+        user_id: 'public_user_id',
+    });
+
+});
+
+
 </script>
 {% endblock %}

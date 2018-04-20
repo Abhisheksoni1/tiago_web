@@ -16,10 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from bitfinex import views
+from bitfinex_demo_feed import urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^demo_feed/', include(urls)),
     url(r'^$', views.home, name='home'),
+    url(r'^stop/$', views.stop, name='stop'),
+    url(r'^start/(?P<id>\d+)/(?P<symbol>\w+)/(?P<interval>\w+)$', views.start, name='start'),
     url(r'^bitfinex/(?P<symbol>\w+)/(?P<interval>\w+)$', views.candle, name='candle'),
     url(r'^update_data/(?P<symbol>\w+)$', views.update_data, name='update_data')
 ]

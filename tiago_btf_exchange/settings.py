@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'bitfinex',
     'highcharts',
+    'bitfinex_demo_feed',
 )
 
 MIDDLEWARE_CLASSES = (

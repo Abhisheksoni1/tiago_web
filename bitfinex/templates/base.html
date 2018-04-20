@@ -5,17 +5,118 @@
         <link rel="icon" href="https://1.bp.blogspot.com/-3MiqCmm_Nhg/Wn1_B1cjrRI/AAAAAAAALvo/Q-0ZZehrtfYNqp77dHMyxBwPGjQOtmxlgCLcBGAs/s1600/favicon.png" type="image/png">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
+        <script type="text/javascript" src="charting_library/charting_library.min.js"></script>
+        <script type="text/javascript" src="charting_library/datafeed/udf/datafeed.js"></script>
         <style>
-    	.loader {position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('https://loading.io/assets/img/landing/curved-bars.svg') 50% 50% no-repeat rgb(249,249,249);opacity: .9;}
+            .switch {
+              position: relative;
+              display: inline-block;
+              width: 120px;
+              height: 34px;
+            }
+
+            .switch input {display:none;}
+
+            .slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #ca2222;
+              -webkit-transition: .4s;
+              transition: .4s;
+               border-radius: 34px;
+            }
+
+            .slider:before {
+              position: absolute;
+              content: "";
+              height: 26px;
+              width: 26px;
+              left: 4px;
+              bottom: 4px;
+              background-color: white;
+              -webkit-transition: .4s;
+              transition: .4s;
+              border-radius: 50%;
+            }
+
+            input:checked + .slider {
+              background-color: #2ab934;
+            }
+
+            input:focus + .slider {
+              box-shadow: 0 0 1px #2196F3;
+            }
+
+            input:checked + .slider:before {
+              -webkit-transform: translateX(26px);
+              -ms-transform: translateX(26px);
+              transform: translateX(85px);
+            }
+
+            .slider:after
+            {
+             content:'BACKTEST';
+             color: white;
+             display: block;
+             position: absolute;
+             transform: translate(-50%,-50%);
+             top: 50%;
+             left: 50%;
+             font-size: 10px;
+             font-family: Verdana, sans-serif;
+            }
+
+            input:checked + .slider:after
+            {
+              content:'LIVE';
+            }
+
+        </style>
+        <style>
+            body{
+			}
+		.container{
+			width: 450px;
+			margin: 0 auto;
+		}
+
+
+
+		ul.tabs{
+			margin: 0px;
+			padding: 0px;
+			list-style: none;
+		}
+		ul.tabs li{
+			background: none;
+			color: #222;
+			display: inline-block;
+			padding: 10px 15px;
+			cursor: pointer;
+		}
+
+		ul.tabs li.current{
+			background: #ededed;
+			color: #222;
+		}
+
+		.tab-content{
+			display: none;
+			background: #ededed;
+			padding: 15px;
+		}
+
+		.tab-content.current{
+			display: inherit;
+		}
         </style>
 
-        {% load highcharts_tags %}
-        <!-- enable highcharts scripts -->
-        <!-- highcharts_js (highcharts 3d highstock heatmap) you need to pass 1 or 0 if you want to enable 3d or highstock         etc...-->
-        {% highcharts_js 1 0 0 0 %}
+
     </head>
 <body bgcolor="#FDF3E7">
 
